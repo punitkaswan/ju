@@ -1,896 +1,558 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pass/Fail Checker | JU College Portal | JECRC University</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0d0f1a;
-    --surface: #141828;
-    --card: #1a1f33;
-    --border: #252b45;
-    --accent: #6c63ff;
-    --accent2: #ff6584;
-    --pass: #00e5a0;
-    --warn: #ffd166;
-    --fail: #ff4d6d;
-    --text: #e8eaf6;
-    --muted: #8892b0;
-    --radius: 18px;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta name="theme-color" content="#0a1020">
+  <meta name="description" content="JU College Pass / Fail Checker">
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  <title>Pass / Fail Checker | JU College Portal</title>
 
-  /* Animated background */
-  body::before {
-    content: '';
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(ellipse at 20% 30%, rgba(108,99,255,0.12) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 70%, rgba(255,101,132,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(0,229,160,0.04) 0%, transparent 60%);
-    animation: bgPulse 8s ease-in-out infinite alternate;
-    pointer-events: none;
-    z-index: 0;
-  }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-  @keyframes bgPulse {
-    from { transform: scale(1) rotate(0deg); }
-    to   { transform: scale(1.05) rotate(2deg); }
-  }
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  >
 
-  .wrapper {
-    position: relative;
-    z-index: 1;
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 40px 20px 80px;
-  }
-
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 48px;
-  }
-
-  .college-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 100px;
-    padding: 8px 20px;
-    font-size: 13px;
-    color: var(--muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 24px;
-  }
-
-  .college-badge::before {
-    content: '🎓';
-    font-size: 16px;
-  }
-
-  h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(2rem, 6vw, 3.2rem);
-    font-weight: 800;
-    line-height: 1.1;
-    background: linear-gradient(135deg, #fff 0%, #b0a8ff 50%, #ff6584 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 10px;
-  }
-
-  .subtitle {
-    color: var(--muted);
-    font-size: 15px;
-    font-weight: 300;
-  }
-
-  /* Main Card */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 36px;
-    margin-bottom: 24px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-  }
-
-  .card-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--accent);
-    margin-bottom: 28px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  /* Input Groups */
-  .input-grid {
-    display: grid;
-    gap: 20px;
-  }
-
-  .input-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .input-label {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  .max-label {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 2px 10px;
-    font-size: 11px;
-    color: var(--accent);
-    font-weight: 600;
-  }
-
-  .input-wrap {
-    position: relative;
-  }
-
-  input[type="number"] {
-    width: 100%;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 48px 14px 18px;
-    font-size: 18px;
-    font-family: 'Syne', sans-serif;
-    font-weight: 600;
-    color: var(--text);
-    transition: border-color 0.2s, box-shadow 0.2s;
-    outline: none;
-    -moz-appearance: textfield;
-  }
-
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-  }
-
-  input[type="number"]:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
-  }
-
-  input[type="number"].valid   { border-color: var(--pass); }
-  input[type="number"].invalid { border-color: var(--fail); }
-
-  .input-icon {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 18px;
-    pointer-events: none;
-  }
-
-  /* Score bar */
-  .score-bar-wrap {
-    margin-top: 8px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 100px;
-    overflow: hidden;
-  }
-
-  .score-bar {
-    height: 100%;
-    border-radius: 100px;
-    transition: width 0.4s cubic-bezier(.4,0,.2,1), background 0.3s;
-    width: 0%;
-  }
-
-  /* Divider */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 8px 0;
-    color: var(--muted);
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .divider::before, .divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* Result Card */
-  .result-card {
-    background: var(--card);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    padding: 36px;
-    text-align: center;
-    transition: border-color 0.4s, box-shadow 0.4s;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .result-card.pass  { border-color: var(--pass);  box-shadow: 0 0 40px rgba(0,229,160,0.12); }
-  .result-card.warn  { border-color: var(--warn);  box-shadow: 0 0 40px rgba(255,209,102,0.12); }
-  .result-card.fail  { border-color: var(--fail);  box-shadow: 0 0 40px rgba(255,77,109,0.15); }
-  .result-card.idle  { border-color: var(--border); }
-
-  .result-emoji {
-    font-size: 72px;
-    display: block;
-    margin-bottom: 16px;
-    animation: emojiPop 0.4s cubic-bezier(.34,1.56,.64,1);
-    line-height: 1;
-  }
-
-  @keyframes emojiPop {
-    from { transform: scale(0.5) rotate(-10deg); opacity: 0; }
-    to   { transform: scale(1) rotate(0deg); opacity: 1; }
-  }
-
-  .result-label {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin-bottom: 6px;
-  }
-
-  .result-label.pass { color: var(--pass); }
-  .result-label.warn { color: var(--warn); }
-  .result-label.fail { color: var(--fail); }
-
-  .result-score {
-    font-family: 'Syne', sans-serif;
-    font-size: clamp(3rem, 12vw, 5rem);
-    font-weight: 800;
-    line-height: 1;
-    margin-bottom: 4px;
-    transition: color 0.4s;
-  }
-
-  .result-score.pass { color: var(--pass); }
-  .result-score.warn { color: var(--warn); }
-  .result-score.fail { color: var(--fail); }
-  .result-score.idle { color: var(--border); }
-
-  .result-out-of {
-    color: var(--muted);
-    font-size: 14px;
-    margin-bottom: 20px;
-  }
-
-  /* Progress Ring */
-  .ring-wrap {
-    position: relative;
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 24px;
-  }
-
-  .ring-wrap svg { transform: rotate(-90deg); }
-
-  .ring-bg { fill: none; stroke: var(--border); stroke-width: 8; }
-  .ring-fg {
-    fill: none;
-    stroke-width: 8;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1), stroke 0.4s;
-  }
-
-  .ring-text {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Syne', sans-serif;
-    font-weight: 800;
-    font-size: 22px;
-    line-height: 1;
-  }
-
-  .ring-pct { font-size: 11px; color: var(--muted); font-weight: 500; margin-top: 2px; }
-
-  /* Breakdown */
-  .breakdown {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 24px;
-    text-align: left;
-  }
-
-  .breakdown-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-  }
-
-  .breakdown-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
-  .breakdown-val   { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; }
-
-  /* Need marks message */
-  .need-marks {
-    display: none;
-    background: rgba(255,77,109,0.08);
-    border: 1px solid rgba(255,77,109,0.3);
-    border-radius: 14px;
-    padding: 20px 24px;
-    margin-top: 20px;
-    text-align: left;
-    animation: slideUp 0.35s ease;
-  }
-
-  .need-marks.show { display: block; }
-
-  @keyframes slideUp {
-    from { transform: translateY(16px); opacity: 0; }
-    to   { transform: translateY(0); opacity: 1; }
-  }
-
-  .need-marks-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--fail);
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .need-marks p { font-size: 14px; color: var(--muted); line-height: 1.6; }
-  .need-marks strong { color: var(--text); }
-
-  .need-marks .tip {
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid rgba(255,77,109,0.2);
-    font-size: 13px;
-    color: var(--muted);
-    font-style: italic;
-  }
-
-  /* Formula note */
-  .formula-note {
-    background: rgba(108,99,255,0.06);
-    border: 1px solid rgba(108,99,255,0.2);
-    border-radius: 12px;
-    padding: 16px 20px;
-    font-size: 12.5px;
-    color: var(--muted);
-    line-height: 1.7;
-    margin-bottom: 24px;
-  }
-
-  .formula-note strong { color: var(--accent); font-family: 'Syne', sans-serif; }
-  .formula-note code {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 2px 8px;
-    font-size: 12px;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-  }
-
-  /* Reset btn */
-  .reset-btn {
-    display: block;
-    width: 100%;
-    margin-top: 16px;
-    padding: 14px;
-    background: transparent;
-    border: 1.5px solid var(--border);
-    border-radius: 12px;
-    color: var(--muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-  }
-
-  .reset-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Particles canvas */
-  #particles {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Shake animation for fail */
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-5px); }
-    80% { transform: translateX(5px); }
-  }
-
-  .shake { animation: shake 0.5s ease; }
-
-  /* Confetti burst for pass */
-  .confetti-item {
-    position: fixed;
-    width: 8px;
-    height: 8px;
-    border-radius: 2px;
-    animation: confettiFall 1.2s ease-in forwards;
-    z-index: 100;
-    pointer-events: none;
-  }
-
-  @keyframes confettiFall {
-    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(400px) rotate(720deg); opacity: 0; }
-  }
-
-  @media (max-width: 520px) {
-    .card { padding: 24px 20px; }
-    .breakdown { grid-template-columns: 1fr; }
-  }
-</style>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<div class="wrapper">
-  <header class="header">
-    <div class="college-badge">Student Pass/Fail Check Portal</div>
-    <h1>Pass/Fail Checker</h1>
-    <p class="subtitle">Enter your marks to check if you have passed or have a back</p>
-  </header>
+  <!-- Background -->
+  <div class="bg-orb orb-1"></div>
+  <div class="bg-orb orb-2"></div>
+  <div class="bg-orb orb-3"></div>
 
-  <!-- Formula info -->
-  <!--
-  <div class="formula-note">
-    <strong>📐 How marks are calculated</strong><br>
-    <code>(InSem1 + InSem2) ÷ 2.66</code> + Assignment + <code>EndSem ÷ 2</code> = Total (out of 100)<br>
-    You need <strong>≥ 40 marks</strong> to pass. End sem marks carry <strong>50%</strong> weight.
-  </div>
-   -->
-  <!-- Input Card -->
-  <div class="card">
-    <div class="card-title">📝 Enter Your Marks</div>
-    <div class="input-grid">
+  <canvas id="particles"></canvas>
 
-      <div class="input-group">
-        <div class="input-label">
-          1st InSem Marks
-          <span class="max-label">Max: 40</span>
+  <main class="container">
+
+    <!-- HEADER -->
+    <header class="header">
+
+      <div class="brand">
+        <div class="brand-logo">
+          JU
         </div>
-        <div class="input-wrap">
-          <input type="number" id="insem1" placeholder="0" min="0" max="40" oninput="calc()" />
-          <span class="input-icon" id="icon1">📖</span>
+
+        <div class="brand-text">
+          <span>STUDENT PORTAL</span>
+          <h1>Pass / Fail Checker</h1>
         </div>
-        <div class="score-bar-wrap"><div class="score-bar" id="bar1"></div></div>
       </div>
 
-      <div class="input-group">
-        <div class="input-label">
-          2nd InSem Marks
-          <span class="max-label">Max: 40</span>
+      <button
+        class="theme-button"
+        id="themeBtn"
+        type="button"
+        aria-label="Toggle theme"
+      >
+        ☀️
+      </button>
+
+    </header>
+
+
+    <!-- HERO -->
+    <section class="hero">
+
+      <div class="hero-content">
+
+        <div class="live-status">
+          <span class="live-dot"></span>
+          LIVE CALCULATION
         </div>
-        <div class="input-wrap">
-          <input type="number" id="insem2" placeholder="0" min="0" max="40" oninput="calc()" />
-          <span class="input-icon" id="icon2">📗</span>
+
+        <h2>
+          Check your result
+          <br>
+          <span>in seconds.</span>
+        </h2>
+
+        <p>
+          Enter your marks and instantly see your calculated score,
+          passing status and End Semester requirement.
+        </p>
+
+      </div>
+
+      <div class="pass-card">
+
+        <span>PASS REQUIREMENT</span>
+
+        <div>
+          <strong>40</strong>
+          <small>/ 100</small>
         </div>
-        <div class="score-bar-wrap"><div class="score-bar" id="bar2"></div></div>
+
+        <p>+ End Sem ≥ 35</p>
+
       </div>
 
-      <div class="divider">Internal Assessment</div>
+    </section>
 
-      <div class="input-group">
-        <div class="input-label">
-          Assignment Marks
-          <span class="max-label">Max: 20</span>
+
+    <!-- MAIN GRID -->
+    <section class="dashboard">
+
+
+      <!-- INPUT CARD -->
+      <section class="glass-card input-card">
+
+        <div class="card-header">
+
+          <div>
+            <span class="section-label">01 / MARKS</span>
+            <h3>Enter your marks</h3>
+          </div>
+
+          <div class="live-label">
+            <span></span>
+            LIVE
+          </div>
+
         </div>
-        <div class="input-wrap">
-          <input type="number" id="assign" placeholder="0" min="0" max="20" oninput="calc()" />
-          <span class="input-icon" id="icon3">✏️</span>
+
+
+        <!-- Formula -->
+        <div class="formula">
+
+          <span>InSem 1</span>
+          <b>+</b>
+
+          <span>InSem 2</span>
+          <b>÷ 2.66</b>
+
+          <i>+</i>
+
+          <span>Assignment</span>
+
+          <i>+</i>
+
+          <span>End Sem</span>
+          <b>÷ 2</b>
+
         </div>
-        <div class="score-bar-wrap"><div class="score-bar" id="bar3"></div></div>
-      </div>
 
-      <div class="divider">End Semester</div>
 
-      <div class="input-group">
-        <div class="input-label">
-          End Sem Marks
-          <span class="max-label">Max: 100</span>
+        <div class="fields">
+
+
+          <!-- INSEM 1 -->
+          <div class="field">
+
+            <div class="field-label">
+
+              <strong>1st InSem</strong>
+
+              <span>MAX 40</span>
+
+            </div>
+
+            <div class="input-wrapper">
+
+              <input
+                type="number"
+                id="insem1"
+                min="0"
+                max="40"
+                step="0.01"
+                placeholder="0"
+                inputmode="decimal"
+              >
+
+              <span class="input-icon">📖</span>
+
+            </div>
+
+            <div class="progress-bar">
+              <div id="bar1"></div>
+            </div>
+
+          </div>
+
+
+          <!-- INSEM 2 -->
+          <div class="field">
+
+            <div class="field-label">
+
+              <strong>2nd InSem</strong>
+
+              <span>MAX 40</span>
+
+            </div>
+
+            <div class="input-wrapper">
+
+              <input
+                type="number"
+                id="insem2"
+                min="0"
+                max="40"
+                step="0.01"
+                placeholder="0"
+                inputmode="decimal"
+              >
+
+              <span class="input-icon">📗</span>
+
+            </div>
+
+            <div class="progress-bar">
+              <div id="bar2"></div>
+            </div>
+
+          </div>
+
+
+          <div class="divider">
+            <span>Internal Assessment</span>
+          </div>
+
+
+          <!-- ASSIGNMENT -->
+          <div class="field">
+
+            <div class="field-label">
+
+              <strong>Assignment</strong>
+
+              <span>MAX 20</span>
+
+            </div>
+
+            <div class="input-wrapper">
+
+              <input
+                type="number"
+                id="assign"
+                min="0"
+                max="20"
+                step="0.01"
+                placeholder="0"
+                inputmode="decimal"
+              >
+
+              <span class="input-icon">✏️</span>
+
+            </div>
+
+            <div class="progress-bar">
+              <div id="bar3"></div>
+            </div>
+
+          </div>
+
+
+          <div class="divider">
+            <span>End Semester</span>
+          </div>
+
+
+          <!-- END SEM -->
+          <div class="field">
+
+            <div class="field-label">
+
+              <strong>End Sem</strong>
+
+              <span class="required-label">MIN 35 • MAX 100</span>
+
+            </div>
+
+            <div class="input-wrapper">
+
+              <input
+                type="number"
+                id="endsem"
+                min="0"
+                max="100"
+                step="0.01"
+                placeholder="0"
+                inputmode="decimal"
+              >
+
+              <span class="input-icon">📋</span>
+
+            </div>
+
+            <div class="progress-bar">
+              <div id="bar4"></div>
+            </div>
+
+            <small class="field-note">
+              ⚠️ Minimum 35 marks required in End Sem to pass
+            </small>
+
+          </div>
+
         </div>
-        <div class="input-wrap">
-          <input type="number" id="endsem" placeholder="0" min="0" max="100" oninput="calc()" />
-          <span class="input-icon" id="icon4">📋</span>
+
+
+        <!-- ACTIONS -->
+        <div class="actions">
+
+          <button
+            class="sample-button"
+            id="sampleBtn"
+            type="button"
+          >
+            Try Sample
+            <span>→</span>
+          </button>
+
+          <button
+            class="reset-button"
+            id="resetBtn"
+            type="button"
+          >
+            ↺ Reset
+          </button>
+
         </div>
-        <div class="score-bar-wrap"><div class="score-bar" id="bar4"></div></div>
+
+
+        <div class="keyboard-hint">
+          Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to calculate
+        </div>
+
+      </section>
+
+
+      <!-- RESULT CARD -->
+      <section
+        class="glass-card result-card idle"
+        id="resultCard"
+      >
+
+        <div class="card-header">
+
+          <div>
+            <span class="section-label">02 / RESULT</span>
+            <h3>Your result</h3>
+          </div>
+
+          <div
+            class="result-badge"
+            id="resultBadge"
+          >
+            WAITING
+          </div>
+
+        </div>
+
+
+        <!-- SCORE RING -->
+        <div class="score-ring">
+
+          <svg viewBox="0 0 160 160">
+
+            <circle
+              class="ring-background"
+              cx="80"
+              cy="80"
+              r="65"
+            ></circle>
+
+            <circle
+              class="ring-progress"
+              id="ringFg"
+              cx="80"
+              cy="80"
+              r="65"
+            ></circle>
+
+          </svg>
+
+
+          <div class="ring-content">
+
+            <strong id="ringScore">—</strong>
+
+            <span>/ 100</span>
+
+          </div>
+
+        </div>
+
+
+        <!-- RESULT STATUS -->
+        <div class="result-status">
+
+          <div
+            class="result-icon"
+            id="resultEmoji"
+          >
+            🎓
+          </div>
+
+          <div
+            class="result-label"
+            id="resultLabel"
+          >
+            Awaiting Marks
+          </div>
+
+          <div
+            class="result-score idle"
+            id="resultScore"
+          >
+            —
+          </div>
+
+          <p id="resultSub">
+            Enter your marks to calculate your result.
+          </p>
+
+        </div>
+
+
+        <!-- BREAKDOWN -->
+        <div class="breakdown">
+
+          <div class="breakdown-item">
+
+            <span>InSem Contribution</span>
+
+            <strong id="bkInsem">
+              —
+            </strong>
+
+          </div>
+
+
+          <div class="breakdown-item">
+
+            <span>Assignment</span>
+
+            <strong id="bkAssign">
+              —
+            </strong>
+
+          </div>
+
+
+          <div class="breakdown-item">
+
+            <span>End Sem Contribution</span>
+
+            <strong id="bkEnd">
+              —
+            </strong>
+
+          </div>
+
+
+          <div class="breakdown-item total">
+
+            <span>Calculated Total</span>
+
+            <strong id="bkTotal">
+              —
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- PASS REQUIREMENT -->
+        <div
+          class="target-panel"
+          id="targetPanel"
+        >
+
+          <div class="target-heading">
+
+            <span>🎯</span>
+
+            <strong id="targetTitle">
+              Passing requirements
+            </strong>
+
+          </div>
+
+          <p id="targetMessage">
+            You need a calculated total of at least
+            <strong>40</strong> and an End Sem score of at least
+            <strong>35</strong>.
+          </p>
+
+          <div class="target-progress">
+            <div id="targetProgress"></div>
+          </div>
+
+          <small id="targetTip">
+            Total ≥ 40 AND End Sem ≥ 35
+          </small>
+
+        </div>
+
+      </section>
+
+    </section>
+
+
+    <!-- INFORMATION CARDS -->
+    <section class="info-grid">
+
+      <div class="info-card">
+        <span>PASS SCORE</span>
+        <strong>40</strong>
+        <small>Calculated total required</small>
       </div>
 
-    </div>
-    <button class="reset-btn" onclick="resetAll()">↺ Reset all marks</button>
-  </div>
-
-  <!-- Result Card -->
-  <div class="result-card idle" id="resultCard">
-    <div class="ring-wrap">
-      <svg width="120" height="120" viewBox="0 0 120 120">
-        <circle class="ring-bg" cx="60" cy="60" r="52"/>
-        <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"
-          stroke-dasharray="326.7"
-          stroke-dashoffset="326.7"
-          stroke="var(--accent)"/>
-      </svg>
-      <div class="ring-text" id="ringText">
-        <span id="ringScore">—</span>
-        <span class="ring-pct" id="ringPct">/ 100</span>
+      <div class="info-card">
+        <span>END SEM MINIMUM</span>
+        <strong>35</strong>
+        <small>Mandatory End Sem marks</small>
       </div>
-    </div>
 
-    <span class="result-emoji" id="resultEmoji">🎓</span>
-    <div class="result-label idle" id="resultLabel">Awaiting Marks</div>
-    <div class="result-score idle" id="resultScore">—</div>
-    <div class="result-out-of">out of 100 marks</div>
-
-    <!-- Breakdown -->
-    <div class="breakdown">
-      <div class="breakdown-item">
-        <div class="breakdown-label">InSem Contribution (÷2.66)</div>
-        <div class="breakdown-val" id="bkInsem" style="color:var(--accent)">—</div>
+      <div class="info-card">
+        <span>END SEM WEIGHT</span>
+        <strong>50%</strong>
+        <small>End Sem contribution</small>
       </div>
-      <div class="breakdown-item">
-        <div class="breakdown-label">Assignment</div>
-        <div class="breakdown-val" id="bkAssign" style="color:var(--warn)">—</div>
+
+      <div class="info-card">
+        <span>ASSIGNMENT MAX</span>
+        <strong>20</strong>
+        <small>Maximum marks</small>
       </div>
-      <div class="breakdown-item">
-        <div class="breakdown-label">End Sem (÷2)</div>
-        <div class="breakdown-val" id="bkEnd" style="color:var(--accent2)">—</div>
-      </div>
-      <div class="breakdown-item">
-        <div class="breakdown-label">Total</div>
-        <div class="breakdown-val" id="bkTotal" style="color:var(--pass)">—</div>
-      </div>
-    </div>
 
-    <!-- Need marks message -->
-    <div class="need-marks" id="needMarks">
-      <div class="need-marks-title">🥲 You need more marks!</div>
-      <p id="needMarksMsg"></p>
-      <div class="tip" id="needMarksTip"></div>
-    </div>
-  </div>
-</div>
+    </section>
 
-<!-- Footer -->
-<footer style="
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  padding: 24px 20px 40px;
-  border-top: 1px solid #252b45;
-  margin-top: 8px;
-">
-  <p style="
-    font-size: 13px;
-    color: #8892b0;
-    font-family: 'DM Sans', sans-serif;
-    letter-spacing: 0.03em;
-  ">
-    <span style="color:#555e82; font-family: monospace; font-size:12px;">&lt;/&gt;</span>
-    &nbsp;Crafted with <span style="color:#ff4d6d; font-size:15px;">❤️</span> by
-    <span style="
-      font-family: 'Syne', sans-serif;
-      font-weight: 700;
-      background: linear-gradient(135deg, #b0a8ff, #ff6584);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    "><a href="https://instagram.com/punitkaswan7" style="text-decoration: none; color: inherit;">
-  Punit Kaswan
-</a></span>
-  </p>
-</footer>
 
-<canvas id="particles"></canvas>
+    <!-- FOOTER -->
+    <footer>
 
-<script>
-  // ---- Particle system ----
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
-  let particles = [];
-  let animFrame;
+      <span>JU College Portal</span>
 
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
+      <span>•</span>
 
-  function spawnParticles(mode) {
-    particles = [];
-    cancelAnimationFrame(animFrame);
-    if (mode === 'idle') return;
+      <span>Pass / Fail Checker</span>
 
-    const colors = mode === 'pass'
-      ? ['#00e5a0','#6c63ff','#fff']
-      : mode === 'warn'
-        ? ['#ffd166','#ff9f43','#fff']
-        : ['#ff4d6d','#ff8a80','#d63031'];
+      <span>•</span>
 
-    for (let i = 0; i < 40; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height * 0.6,
-        r: Math.random() * 3 + 1,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: Math.random() * 0.5 + 0.2,
-        alpha: Math.random() * 0.5 + 0.2
-      });
-    }
-    drawParticles();
-  }
+      <a
+        href="https://instagram.com/punitkaswan7"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Crafted by Punit Kaswan ↗
+      </a>
 
-  function drawParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach(p => {
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = p.alpha;
-      ctx.fill();
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.y > canvas.height) { p.y = 0; p.x = Math.random() * canvas.width; }
-    });
-    ctx.globalAlpha = 1;
-    animFrame = requestAnimationFrame(drawParticles);
-  }
+    </footer>
 
-  // ---- Confetti burst ----
-  function burstConfetti() {
-    const colors = ['#00e5a0','#6c63ff','#ff6584','#ffd166','#fff'];
-    for (let i = 0; i < 30; i++) {
-      const el = document.createElement('div');
-      el.className = 'confetti-item';
-      el.style.cssText = `
-        left:${Math.random()*100}vw;
-        top:${Math.random()*30}vh;
-        background:${colors[Math.floor(Math.random()*colors.length)]};
-        animation-delay:${Math.random()*0.5}s;
-        animation-duration:${0.8+Math.random()*0.8}s;
-      `;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 1600);
-    }
-  }
+  </main>
 
-  // ---- Bar colour ----
-  function barColor(pct) {
-    if (pct < 0.4) return 'var(--fail)';
-    if (pct < 0.7) return 'var(--warn)';
-    return 'var(--pass)';
-  }
 
-  // ---- Update score bar ----
-  function updateBar(id, val, max) {
-    const bar = document.getElementById(id);
-    const pct = Math.min(val / max, 1);
-    bar.style.width   = (pct * 100) + '%';
-    bar.style.background = barColor(pct);
-  }
+  <script src="script.js"></script>
 
-  // ---- Input validation feedback ----
-  function validateInput(inputEl, val, max) {
-    inputEl.classList.remove('valid','invalid');
-    if (val === '' || isNaN(val)) return;
-    if (val < 0 || val > max) inputEl.classList.add('invalid');
-    else                      inputEl.classList.add('valid');
-  }
-
-  // ---- Main calc ----
-  let lastMode = 'idle';
-
-  function calc() {
-    const i1 = document.getElementById('insem1');
-    const i2 = document.getElementById('insem2');
-    const ia = document.getElementById('assign');
-    const ie = document.getElementById('endsem');
-
-    const v1 = parseFloat(i1.value);
-    const v2 = parseFloat(i2.value);
-    const va = parseFloat(ia.value);
-    const ve = parseFloat(ie.value);
-
-    // Validate
-    validateInput(i1, v1, 40);
-    validateInput(i2, v2, 40);
-    validateInput(ia, va, 20);
-    validateInput(ie, ve, 100);
-
-    // Bars
-    if (!isNaN(v1)) updateBar('bar1', v1, 40);
-    if (!isNaN(v2)) updateBar('bar2', v2, 40);
-    if (!isNaN(va)) updateBar('bar3', va, 20);
-    if (!isNaN(ve)) updateBar('bar4', ve, 100);
-
-    // Need at least one value
-    const anyFilled = [v1,v2,va,ve].some(v => !isNaN(v));
-    if (!anyFilled) { resetDisplay(); return; }
-
-    // Safe defaults
-    const s1 = isNaN(v1) ? 0 : Math.min(v1, 40);
-    const s2 = isNaN(v2) ? 0 : Math.min(v2, 40);
-    const sa = isNaN(va) ? 0 : Math.min(va, 20);
-    const se = isNaN(ve) ? 0 : Math.min(ve, 100);
-
-    const insemContrib = (s1 + s2) / 2.66;
-    const endContrib   = se / 2;
-    const total        = insemContrib + sa + endContrib;
-    const totalRounded = Math.round(total * 100) / 100;
-
-    // Breakdown display
-    document.getElementById('bkInsem').textContent  = insemContrib.toFixed(2);
-    document.getElementById('bkAssign').textContent = sa.toFixed(1);
-    document.getElementById('bkEnd').textContent    = endContrib.toFixed(1);
-    document.getElementById('bkTotal').textContent  = totalRounded.toFixed(2);
-
-    // Ring
-    const ringPct = Math.min(total / 80, 1);
-    const circum  = 2 * Math.PI * 52; // 326.7
-    document.getElementById('ringFg').style.strokeDashoffset = circum - ringPct * circum;
-    document.getElementById('ringScore').textContent = totalRounded.toFixed(1);
-
-    // Determine mode
-    let mode, emoji, label, scoreColor;
-
-    if (total < 40) {
-      mode = 'fail'; emoji = '😢'; label = '❌ FAIL — Back';
-    } else if (total < 60) {
-      mode = 'warn'; emoji = '🥲'; label = '✅ PASS — Borderline';
-    } else {
-      mode = 'pass'; emoji = '😄'; label = '✅ PASS — Well Done!';
-    }
-
-    // Update result card
-    const card = document.getElementById('resultCard');
-    card.className = 'result-card ' + mode;
-
-    const ringFg = document.getElementById('ringFg');
-    ringFg.style.stroke = mode === 'pass' ? 'var(--pass)' : mode === 'warn' ? 'var(--warn)' : 'var(--fail)';
-
-    // Emoji with pop animation
-    const emojiEl = document.getElementById('resultEmoji');
-    if (emojiEl.textContent !== emoji) {
-      emojiEl.style.animation = 'none';
-      emojiEl.offsetHeight; // reflow
-      emojiEl.style.animation = '';
-      emojiEl.textContent = emoji;
-    }
-
-    document.getElementById('resultLabel').className = 'result-label ' + mode;
-    document.getElementById('resultLabel').textContent = label;
-
-    const scoreEl = document.getElementById('resultScore');
-    scoreEl.className = 'result-score ' + mode;
-    scoreEl.textContent = totalRounded.toFixed(2);
-
-    // Particles & confetti
-    if (mode !== lastMode) {
-      spawnParticles(mode);
-      if (mode === 'pass') burstConfetti();
-      if (mode === 'fail') {
-        card.classList.add('shake');
-        setTimeout(() => card.classList.remove('shake'), 600);
-      }
-      lastMode = mode;
-    }
-
-    // Need marks logic
-    const needEl  = document.getElementById('needMarks');
-    const msgEl   = document.getElementById('needMarksMsg');
-    const tipEl   = document.getElementById('needMarksTip');
-
-    if (mode === 'fail') {
-      const deficit = 40 - total;
-      // How many more end sem marks needed (end sem contributes ÷2)
-      const needed = Math.ceil(deficit * 2); // because endsem/2 contributes
-      const newEnd = se + needed;
-
-      needEl.classList.add('show');
-      msgEl.innerHTML = `Your current total is <strong>${totalRounded.toFixed(2)}</strong> — you are <strong>${needed} marks short</strong> of passing (40 required).<br><br>
-      To pass, you need <strong>${needed} more marks in End Sem</strong> (i.e. End Sem score should be at least <strong>35</strong>).`;
-
-      if (newEnd > 100) {
-        const maxEndContrib = 100 / 2;
-        const maxPossible = insemContrib + sa + maxEndContrib;
-        tipEl.innerHTML = `⚠️ Even with full End Sem marks (100), your max possible total would be <strong>${maxPossible.toFixed(2)}</strong>. Please talk to your teacher immediately. 🥹`;
-      } else {
-        tipEl.innerHTML = `📌 Go meet your teacher — explain your situation and work hard in End Sem. You can still clear this! 💪`;
-      }
-    } else {
-      needEl.classList.remove('show');
-    }
-  }
-
-  function resetDisplay() {
-    lastMode = 'idle';
-    const card = document.getElementById('resultCard');
-    card.className = 'result-card idle';
-    document.getElementById('resultEmoji').textContent = '🎓';
-    document.getElementById('resultLabel').className = 'result-label';
-    document.getElementById('resultLabel').textContent = 'Awaiting Marks';
-    document.getElementById('resultScore').className = 'result-score idle';
-    document.getElementById('resultScore').textContent = '—';
-    document.getElementById('ringScore').textContent = '—';
-    ['bkInsem','bkAssign','bkEnd','bkTotal'].forEach(id => document.getElementById(id).textContent = '—');
-    document.getElementById('ringFg').style.strokeDashoffset = '326.7';
-    document.getElementById('ringFg').style.stroke = 'var(--accent)';
-    document.getElementById('needMarks').classList.remove('show');
-    spawnParticles('idle');
-  }
-
-  function resetAll() {
-    ['insem1','insem2','assign','endsem'].forEach(id => {
-      const el = document.getElementById(id);
-      el.value = '';
-      el.classList.remove('valid','invalid');
-    });
-    ['bar1','bar2','bar3','bar4'].forEach(id => {
-      document.getElementById(id).style.width = '0%';
-    });
-    resetDisplay();
-  }
-</script>
 </body>
 </html>
