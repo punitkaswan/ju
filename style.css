@@ -1519,6 +1519,21 @@ footer a:hover {
     var(--accent);
 }
 
+.footer-logo img {
+  display: block;
+  width: auto;
+  height: 20px;
+  max-width: 70px;
+  object-fit: contain;
+  opacity: .85;
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+.footer-logo img:hover {
+  transform: translateY(-1px) scale(1.03);
+  opacity: 1;
+}
+
 
 /* ---------------- SHAKE ---------------- */
 
@@ -1646,4 +1661,10 @@ footer a:hover {
       1fr;
   }
 
+}
+@media (max-width: 480px) {
+  .footer-logo img {
+    height: 18px;
+    max-width: 60px;
+  }
 }
